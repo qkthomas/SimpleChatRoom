@@ -70,7 +70,7 @@ public:
 		}
 		m_listenfd = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
 		fcntl(m_listenfd, F_SETFL, O_NONBLOCK); // set non-blocking
-		cout << "server listen fd = " << m_listenfd << endl;
+		cout << "server listen fd = " << m_listenfd << ", listening port: " << port << endl;
 		ret = bind(m_listenfd, result->ai_addr, (int)result->ai_addrlen);
 		if (0 != ret) {
 			cout << "bind failed." << endl;
@@ -143,7 +143,8 @@ public:
 								//all incoming connections have been processed
 								break;
 							} else {
-								cout << "accept incoming, error" << endl;
+								cout << "accept incoming, error" ;
+								cout << "errno = " << errno << endl;
 								break;
 							}
 						} else {
@@ -151,6 +152,8 @@ public:
 							if(fcntl(incomingfd, F_SETFL, O_NONBLOCK) < 0) {
 								cout << "set incoming socket fd non-blocking failed." << endl;
 								break;
+							} else {
+								cout << "an incoming socket." << endl;
 							}
 							struct epoll_event event;
 							event.data.fd = incomingfd;
