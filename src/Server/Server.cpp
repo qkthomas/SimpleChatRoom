@@ -147,7 +147,7 @@ public:
 					struct sockaddr_in in_addr;
 					socklen_t in_len = sizeof(struct sockaddr_in);
 					int incomingfd = accept(m_listenfd, (struct sockaddr*)&in_addr, &in_len);
-					if (0 != incomingfd) {
+					if (0 > incomingfd) {
 						if ((errno== EAGAIN)|| (errno== EWOULDBLOCK)) {
 							//all incoming connections have been processed
 							break;
