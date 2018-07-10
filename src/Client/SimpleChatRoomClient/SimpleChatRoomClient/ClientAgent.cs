@@ -14,13 +14,15 @@ namespace SimpleChatRoomClient
 
     class ClientAgent
     {
-        private static readonly int MAX_MESSAGE_SIZE = 512;
+        private static readonly int MAX_MESSAGE_SIZE = 255;
 
         private Socket m_clientsocket = null;
 
         public MainWinPrintMessage m_mwpm = null;
 
         private Thread myThread = null;
+
+        private CancellationTokenSource m_cts = new CancellationTokenSource();
 
         private static String ToUnicodeString(String str)
         {
@@ -30,11 +32,12 @@ namespace SimpleChatRoomClient
 
         public ClientAgent()
         {
-            m_clientsocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         }
 
         public int Connect(String ipaddress, String port)
         {
+            m_clientsocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
             IPAddress ip = IPAddress.Parse(ipaddress);
 
             try
@@ -48,7 +51,7 @@ namespace SimpleChatRoomClient
 
             if (null == myThread)
             {
-                myThread = new Thread(ReceiveMessage);
+                myThread = new Thread(ReceiveMessage) { IsBackground = true };
                 myThread.Start();
             }
 
@@ -94,25 +97,68 @@ namespace SimpleChatRoomClient
         {
             while (true)
             {
-                if (true == m_clientsocket.Poll(10, SelectMode.SelectRead))
+                if (true == m_cts.IsCancellationRequested)
                 {
-                    byte[] header_buf = new byte[1];
-                    if (1 != m_clientsocket.Receive(header_buf, 1, SocketFlags.None))
+                    m_mwpm("ReceiveMessage() thread is being terminatd");
+                    return;
+                }
+
+                try
+                {
+                    if (true == m_clientsocket.Poll(10, SelectMode.SelectRead))
                     {
-                        m_mwpm("no header error");
+                        byte[] header_buf = new byte[1];
+                        byte[] msg_buf = new byte[MAX_MESSAGE_SIZE - 1];
+                        int message_len = 0;
+
+                        int ret = m_clientsocket.Receive(header_buf, 1, SocketFlags.None);
+
+                        if (1 != ret)
+                        {
+                            m_mwpm("no header or connection lost");
+                            ShutDown();
+                            return;
+                        }
+                        message_len = Convert.ToInt32(header_buf[0]);
+                        int msg_buf_offset = 0;
+                        while (message_len > msg_buf_offset)
+                        {
+                            int count = m_clientsocket.Receive(msg_buf, msg_buf_offset, message_len, SocketFlags.None);
+                            msg_buf_offset += count;
+                        }
+                        String msg = Encoding.Unicode.GetString(msg_buf, 0, message_len);
+                        m_mwpm(msg);
                     }
-                    int message_len = Convert.ToInt32(header_buf[0]);
-                    byte[] msg_buf = new byte[MAX_MESSAGE_SIZE-1];
-                    int msg_buf_offset = 0;
-                    while (message_len > msg_buf_offset)
-                    {
-                        int count = m_clientsocket.Receive(msg_buf, msg_buf_offset, message_len, SocketFlags.None);
-                        msg_buf_offset += count;
-                    }
-                    String msg = Encoding.Unicode.GetString(msg_buf, 0, message_len);
-                    m_mwpm(msg);
+                }
+                catch (Exception ex)
+                {
+                    return ;
                 }
             }
+        }
+
+        public void StopReceivingThread ()
+        {
+            m_cts.Cancel();
+        }
+
+        public void ShutDown()
+        {
+            if (null != m_clientsocket)
+            {
+                try
+                {
+                    m_clientsocket.Shutdown(SocketShutdown.Both);
+                    m_clientsocket.Close();
+                }
+                catch (Exception ex)
+                {
+                    return;
+                }
+            }
+
+            myThread = null;
+            m_clientsocket = null;
         }
     }
 }

@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SimpleChatRoomClient"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800"
+        Closing="Window_Closing">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*" />
@@ -30,9 +31,9 @@
         <Label Name="MenuLabel" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"></Label>
         <TextBox Name="Outputbox" Grid.Row="1" IsReadOnly="true" Grid.ColumnSpan="3">
         </TextBox>
-        <TextBox Name="InputBox" Grid.Row="2" Grid.Column="0" IsReadOnly="False" Grid.ColumnSpan="1">
+        <TextBox Name="InputBox" Grid.Row="2" Grid.Column="0" IsReadOnly="False" Grid.ColumnSpan="1" MaxLength="255">
         </TextBox>
         <Button Grid.Row="2" Grid.Column="1" Click="Button_Click">Send</Button>
-        <Button Grid.Row="2" Grid.Column="2" Click="Button_Click_1" IsEnabled="false">Receive</Button>
+        <Button Grid.Row="2" Grid.Column="2" Click="Button_Click_1">Test_Btn</Button>
     </Grid>
 </Window>

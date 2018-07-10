@@ -47,6 +47,7 @@ namespace SimpleChatRoomClient
                 if(0 == m_agent.Connect(ipaddress, portnum))
                 {
                     MenuLabel.Content = $"{m_user_name} is connected to {ipaddress}: {portnum}";
+                    m_agent.SendMessage($"{m_user_name} entered the chatroom");
                 }
             }
         }
@@ -73,7 +74,13 @@ namespace SimpleChatRoomClient
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            m_agent.ReceiveMessageClickTest();
+            m_agent.StopReceivingThread();
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            m_agent.SendMessage($"{m_user_name} leaved the chatroom");
+            m_agent.ShutDown();
         }
     }
 }
