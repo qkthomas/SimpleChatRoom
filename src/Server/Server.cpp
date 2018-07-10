@@ -124,6 +124,16 @@ public:
 
 	}
 
+	void BroadcastMessage(const vector<int>& fds, uint8_t msg_len, char* buf) {
+		char* sent_buf = new char[msg_len+sizeof(char)];
+		sent_buf[0] = (char)msg_len;
+		memcpy(&sent_buf[1], buf, msg_len);
+		for (int fd : fds) {
+			write(fd, sent_buf, msg_len+sizeof(char));
+		}
+		delete[] sent_buf;
+	}
+
 	void Run(int timeout = 60) {
 		cout << "Start epoll_wait: " << "timeout = " << timeout << endl;
 		int event_num = epoll_wait(m_epollfd, m_events, MAX_EVENTS, timeout);
@@ -205,10 +215,15 @@ public:
 							message_count = read(m_events[i].data.fd, buf, remaining_message_len);
 							remaining_message_len -= message_count;
 						}
-						string str(buf, (uint8_t)header_buf[0]);
+						uint8_t message_len = (uint8_t)header_buf[0];
+						string str(buf, message_len);
 						wstring wstr = s2ws(str);
-						cout << "-----------------Incoming Message-----------------" << endl;
+						cout << "-----------------Incoming Message Start-----------------" << endl;
+						cout << "Message Length: " << (unsigned)message_len << endl;
 						wcout << wstr << endl;
+						cout << "-----------------Incoming Message End-----------------" << endl;
+
+						BroadcastMessage(m_connected_socket_fds, message_len, buf);
 					}
 				}
 			}
@@ -233,6 +248,11 @@ void got_signal(int)
 }
 
 int main(int argc,  char** argv) {
+
+	ios::sync_with_stdio(false);    // Linux gcc.
+	locale::global(locale(""));
+	setlocale(LC_CTYPE, "");    // MinGW gcc.
+	wcout.imbue(locale(""));
 
 	struct sigaction sa;
 	memset( &sa, 0, sizeof(sa) );

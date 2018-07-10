@@ -15,11 +15,16 @@ using System.Windows.Shapes;
 
 namespace SimpleChatRoomClient
 {
+    public delegate void PrintMessage(String message);
+
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
+
+
         private String m_user_name;
 
         private ClientAgent m_agent = null;
@@ -28,6 +33,7 @@ namespace SimpleChatRoomClient
         {
             InitializeComponent();
             m_agent = new ClientAgent();
+            m_agent.m_mwpm = new MainWinPrintMessage(this.AppendMessage);
         }
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
@@ -43,6 +49,23 @@ namespace SimpleChatRoomClient
                     MenuLabel.Content = $"{m_user_name} is connected to {ipaddress}: {portnum}";
                 }
             }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            m_agent.SendMessage(InputBox.Text);
+            InputBox.Clear();
+        }
+
+        private void AppendMessage(String message)
+        {
+            Outputbox.AppendText(message);
+            Outputbox.AppendText(Environment.NewLine);
+        }
+
+        private void MenuItem_Click_1(object sender, RoutedEventArgs e)
+        {
+            Outputbox.Clear();
         }
     }
 }

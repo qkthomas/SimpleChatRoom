@@ -22,14 +22,16 @@
                 <MenuItem Header="_Connect" Click="MenuItem_Click" />
             </MenuItem>
             <MenuItem Header="_Tools">
-                <MenuItem Header="_PH1">
+                <MenuItem Header="Clear Output" Click="MenuItem_Click_1">
                 </MenuItem>
                 <MenuItem Header="PH2" IsCheckable="True" IsChecked="True" />
             </MenuItem>
         </Menu>
         <Label Name="MenuLabel" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"></Label>
-        <TextBox Grid.Row="1" IsReadOnly="False" Grid.ColumnSpan="3">
+        <TextBox Name="Outputbox" Grid.Row="1" IsReadOnly="true" Grid.ColumnSpan="3">
         </TextBox>
-        <Button Grid.Row="2" Grid.Column="2">Send</Button>
+        <TextBox Name="InputBox" Grid.Row="2" Grid.Column="0" IsReadOnly="False" Grid.ColumnSpan="2">
+        </TextBox>
+        <Button Grid.Row="2" Grid.Column="2" Click="Button_Click">Send</Button>
     </Grid>
 </Window>
