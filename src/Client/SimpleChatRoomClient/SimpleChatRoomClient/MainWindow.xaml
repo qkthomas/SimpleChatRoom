@@ -30,8 +30,9 @@
         <Label Name="MenuLabel" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"></Label>
         <TextBox Name="Outputbox" Grid.Row="1" IsReadOnly="true" Grid.ColumnSpan="3">
         </TextBox>
-        <TextBox Name="InputBox" Grid.Row="2" Grid.Column="0" IsReadOnly="False" Grid.ColumnSpan="2">
+        <TextBox Name="InputBox" Grid.Row="2" Grid.Column="0" IsReadOnly="False" Grid.ColumnSpan="1">
         </TextBox>
-        <Button Grid.Row="2" Grid.Column="2" Click="Button_Click">Send</Button>
+        <Button Grid.Row="2" Grid.Column="1" Click="Button_Click">Send</Button>
+        <Button Grid.Row="2" Grid.Column="2" Click="Button_Click_1" IsEnabled="false">Receive</Button>
     </Grid>
 </Window>

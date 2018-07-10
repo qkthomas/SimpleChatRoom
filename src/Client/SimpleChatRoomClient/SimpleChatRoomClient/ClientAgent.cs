@@ -67,16 +67,32 @@ namespace SimpleChatRoomClient
                 return -1;
             }
 
+            
             if (null == myThread)
             {
                 myThread = new Thread(ReceiveMessage);
                 myThread.Start();
             }
+            
 
             return 0;
         }
 
-        void ReceiveMessage()
+        public void ReceiveMessageClickTest()
+        {
+            byte[] msg_buf = new byte[MAX_MESSAGE_SIZE];
+            try
+            {
+                int receiveNumber = m_clientsocket.Receive(msg_buf);
+            }
+            catch (Exception ex)
+            {
+            }
+            String msg = Encoding.UTF8.GetString(msg_buf);
+            m_mwpm(msg);
+        }
+
+        private void ReceiveMessage()
         {
             while (true)
             {
@@ -87,16 +103,15 @@ namespace SimpleChatRoomClient
                     {
                         m_mwpm("no header error");
                     }
-                    int remaining_message_len = Convert.ToInt32(header_buf[0]);
+                    int message_len = Convert.ToInt32(header_buf[0]);
                     byte[] msg_buf = new byte[MAX_MESSAGE_SIZE-1];
                     int msg_buf_offset = 0;
-                    while (remaining_message_len > 0)
+                    while (message_len > msg_buf_offset)
                     {
-                        int count = m_clientsocket.Receive(msg_buf, msg_buf_offset, remaining_message_len, SocketFlags.None);
+                        int count = m_clientsocket.Receive(msg_buf, msg_buf_offset, message_len, SocketFlags.None);
                         msg_buf_offset += count;
-                        remaining_message_len -= count;
                     }
-                    String msg = Encoding.UTF8.GetString(msg_buf);
+                    String msg = Encoding.UTF8.GetString(msg_buf, 0, message_len);
                     m_mwpm(msg);
                 }
             }

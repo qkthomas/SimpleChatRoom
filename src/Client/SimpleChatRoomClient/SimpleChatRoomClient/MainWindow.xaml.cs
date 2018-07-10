@@ -59,13 +59,21 @@ namespace SimpleChatRoomClient
 
         private void AppendMessage(String message)
         {
-            Outputbox.AppendText(message);
-            Outputbox.AppendText(Environment.NewLine);
+            Outputbox.Dispatcher.BeginInvoke((Action)delegate ()
+            {
+                Outputbox.AppendText(message);
+                Outputbox.AppendText(Environment.NewLine);
+            });
         }
 
         private void MenuItem_Click_1(object sender, RoutedEventArgs e)
         {
             Outputbox.Clear();
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            m_agent.ReceiveMessageClickTest();
         }
     }
 }
