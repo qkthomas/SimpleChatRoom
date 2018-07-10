@@ -22,10 +22,10 @@ namespace SimpleChatRoomClient
 
         private Thread myThread = null;
 
-        private static String ToUTF8String(String str)
+        private static String ToUnicodeString(String str)
         {
-            byte[] bytes = Encoding.Default.GetBytes(str);
-            return Encoding.UTF8.GetString(bytes);
+            byte[] bytes = Encoding.Unicode.GetBytes(str);
+            return Encoding.Unicode.GetString(bytes);
         }
 
         public ClientAgent()
@@ -46,14 +46,20 @@ namespace SimpleChatRoomClient
                 return -1;
             }
 
+            if (null == myThread)
+            {
+                myThread = new Thread(ReceiveMessage);
+                myThread.Start();
+            }
+
             return 0;
         }
 
         public int SendMessage(String message)
         {
-            String sent_msg = ToUTF8String(message);
+            String sent_msg = ToUnicodeString(message);
 
-            byte[] message_bytes = Encoding.UTF8.GetBytes(sent_msg);
+            byte[] message_bytes = Encoding.Unicode.GetBytes(sent_msg);
             byte[] sent_bytes = new byte[message_bytes.Length + 1];
             sent_bytes[0] = (byte)message_bytes.Length;
             Buffer.BlockCopy(message_bytes, 0, sent_bytes, 1, message_bytes.Length);
@@ -66,14 +72,6 @@ namespace SimpleChatRoomClient
             {
                 return -1;
             }
-
-            
-            if (null == myThread)
-            {
-                myThread = new Thread(ReceiveMessage);
-                myThread.Start();
-            }
-            
 
             return 0;
         }
@@ -88,7 +86,7 @@ namespace SimpleChatRoomClient
             catch (Exception ex)
             {
             }
-            String msg = Encoding.UTF8.GetString(msg_buf);
+            String msg = Encoding.Unicode.GetString(msg_buf);
             m_mwpm(msg);
         }
 
@@ -111,7 +109,7 @@ namespace SimpleChatRoomClient
                         int count = m_clientsocket.Receive(msg_buf, msg_buf_offset, message_len, SocketFlags.None);
                         msg_buf_offset += count;
                     }
-                    String msg = Encoding.UTF8.GetString(msg_buf, 0, message_len);
+                    String msg = Encoding.Unicode.GetString(msg_buf, 0, message_len);
                     m_mwpm(msg);
                 }
             }

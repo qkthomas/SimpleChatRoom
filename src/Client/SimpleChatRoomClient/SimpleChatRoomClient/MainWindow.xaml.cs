@@ -53,7 +53,7 @@ namespace SimpleChatRoomClient
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            m_agent.SendMessage(InputBox.Text);
+            m_agent.SendMessage($"{m_user_name}: {InputBox.Text}");
             InputBox.Clear();
         }
 

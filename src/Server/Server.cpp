@@ -216,13 +216,14 @@ public:
 							remaining_message_len -= message_count;
 						}
 						uint8_t message_len = (uint8_t)header_buf[0];
+						/*
 						string str(buf, message_len);
 						wstring wstr = s2ws(str);
 						cout << "-----------------Incoming Message Start-----------------" << endl;
 						cout << "Message Length: " << (unsigned)message_len << endl;
 						wcout << wstr << endl;
 						cout << "-----------------Incoming Message End-----------------" << endl;
-
+						*/
 						BroadcastMessage(m_connected_socket_fds, message_len, buf);
 					}
 				}
